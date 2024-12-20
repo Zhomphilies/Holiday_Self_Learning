@@ -1,12 +1,12 @@
 const UserService = require('../services/userService');
 
 const addUserController = (req, res) => {
-  const { name, email } = req.body;
-  UserService.addUserService(name, email, (err, message) => {
+  const { name, email, password, passwordConfirm } = req.body;
+  UserService.addUserService(name, email, password, passwordConfirm, (err, message) => {
     if (err) {
       return res.status(500).send(err);
     }
-    res.send(message);
+    res.status(200).send(message);
   });
 };
 
@@ -35,7 +35,7 @@ const getUserController = (req, res) => {
 };
 
 const updateUserController = (req, res) => {
-  const { id } = req.params;
+  const id = req.query.id;
   const { name, email } = req.body;
   UserService.updateUserService(id, name, email, (err, message) => {
     if (err) {
@@ -46,7 +46,7 @@ const updateUserController = (req, res) => {
 };
 
 const deleteUserController = (req, res) => {
-  const { id } = req.params;
+  const id = req.query.id;
   UserService.deleteUserService(id, (err, message) => {
     if (err) {
       return res.status(500).send(err);

@@ -1,11 +1,50 @@
 const UserModel = require('../models/userModel');
+const connection = require('../db');
 
-const addUserService = (name, email, callback) => {
-  UserModel.addUser(name, email, (err, results) => {
+const checkUser = (email, callback) => {
+  const query = 'SELECT * FROM users WHERE user_email = ?';
+  connection.query(query, [email], (err, results) => {
     if (err) {
-      return callback('Error inserting data', null);
+      return callback("Error checking email in database", null);
     }
-    callback(null, 'Data inserted successfully');
+    if (results.length > 0) {
+      return callback('Email already exists', null);
+    }
+    callback(null, 'Email is available');
+  });
+};
+
+const addUserService = (name, email, password, passwordConfirm, callback) => {
+  if(passwordConfirm !== password) {
+    return callback('Password doesn\'t match');
+  }
+  if (password.length < 8) {
+    return callback('Password must atleast 8 character ');
+  }
+  if (!/[A-Z]/.test(password)) {
+    return callback('Password must contain uppercase');
+  }
+  if (!/[a-z]/.test(password)) {
+    return callback('Password must contian lowercase');
+  }
+  if (!/[0-9]/.test(password)) {
+    return callback('Password must contain number');
+  }
+  if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+    return callback('Password must contain symbol');
+  }
+
+  checkUser(email, (err, message) => {
+    if (err) {
+      return callback(err);
+    }
+
+    UserModel.addUser(name, email, password, (err, results) => {
+      if (err) {
+        return callback('Error inserting data');
+      }
+      callback(null, 'User data added successfully');
+    });
   });
 };
 
@@ -29,10 +68,17 @@ const getUserService = (id, callback) => {
 
 const updateUserService = (id, name, email, callback) => {
   UserModel.updateUser(id, name, email, (err, results) => {
-    if (err) {
-      return callback('Error updating data', null);
-    }
-    callback(null, 'Data updated successfully');
+    checkUser(email, (err, message) => {
+      if (err) {
+        return callback(err, "Email has been taken");
+      }
+      
+      if (err) {
+        return callback('Error updating data', null);
+      }
+      
+      callback(null, 'Data updated successfully');
+    });
   });
 };
 
