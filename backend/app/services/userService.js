@@ -1,5 +1,5 @@
 const UserModel = require('../models/userModel');
-const connection = require('../db');
+const connection = require('../../db');
 
 const checkUser = (email, callback) => {
   const query = 'SELECT * FROM users WHERE user_email = ?';
@@ -41,9 +41,9 @@ const addUserService = (name, email, password, passwordConfirm, callback) => {
 
     UserModel.addUser(name, email, password, (err, results) => {
       if (err) {
-        return callback('Error inserting data');
+        return callback('Failed to create user');
       }
-      callback(null, 'User data added successfully');
+      callback(null, 'Successfully to creeate user');
     });
   });
 };
@@ -51,7 +51,7 @@ const addUserService = (name, email, password, passwordConfirm, callback) => {
 const getUsersService = (callback) => {
   UserModel.getUsers((err, results) => {
     if (err) {
-      return callback('Error to find the data', null);
+      return callback('Failed to find user', null);
     }
     callback(null, results);
   });
@@ -60,7 +60,7 @@ const getUsersService = (callback) => {
 const getUserService = (id, callback) => {
   UserModel.getUser(id, (err, results) => {
     if(err) {
-      return callback('Error to find the data');
+      return callback('Error to find user', null);
     }
     callback(null, results);
   });
@@ -68,13 +68,14 @@ const getUserService = (id, callback) => {
 
 const updateUserService = (id, name, email, callback) => {
   UserModel.updateUser(id, name, email, (err, results) => {
+    
+    if (err) {
+      return callback('Error updating data', null);
+    }
+    
     checkUser(email, (err, message) => {
       if (err) {
         return callback(err, "Email has been taken");
-      }
-      
-      if (err) {
-        return callback('Error updating data', null);
       }
       
       callback(null, 'Data updated successfully');

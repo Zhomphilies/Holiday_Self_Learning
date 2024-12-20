@@ -15,28 +15,25 @@ const getUsersController = (req, res) => {
     if (err) {
       return res.status(500).send(err);
     }
-    res.json(users);
+    res.status(200).json(users);
   });
 };
 
 const getUserController = (req, res) => {
   const id = req.query.id;
 
-  if (isNaN(id)) {
-    return res.status(400).json({ message: 'ID harus berupa angka' });
-  }
-
   UserService.getUserService(id, (err, user) => {
     if (err) {
       return res.status(500).send(err);
     }
-    res.json(user);
+    res.status(200).json(user);
   });
 };
 
 const updateUserController = (req, res) => {
   const id = req.query.id;
   const { name, email } = req.body;
+  
   UserService.updateUserService(id, name, email, (err, message) => {
     if (err) {
       return res.status(500).send(err);

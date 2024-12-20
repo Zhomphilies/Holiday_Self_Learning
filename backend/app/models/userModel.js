@@ -1,4 +1,4 @@
-const connection = require('../db');
+const connection = require('../../db');
 
 const addUser = (name, email, password, callback) => {
   const query = 'INSERT INTO users (user_name, user_email, user_password) VALUES (?, ?, ?)';
